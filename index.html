@@ -1,116 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Quiz</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(to bottom, #6a11cb, #2575fc);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-        }
-        h1 {
-            text-align: center;
-            font-size: 2.5em;
-        }
-        .quiz-container {
-            background: #fff;
-            color: #333;
-            border-radius: 10px;
-            padding: 20px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        .question {
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-        button {
-            padding: 10px 15px;
-            margin-top: 20px;
-            background-color: #2575fc;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1em;
-        }
-        button:hover {
-            background-color: #1a5bcf;
-        }
-        .result {
-            font-size: 1.5em;
-            margin-top: 20px;
-        }
-        .incorrect {
-            background: #ffe5e5;
-            border: 1px solid #ff0000;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
-        }
-        .incorrect p {
-            margin: 5px 0;
-        }
-        .incorrect .user-answer {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
-        .incorrect .correct-answer {
-            color: #28a745;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>Dynamic Quiz</h1>
-    <div class="quiz-container">
-        <div id="quiz">
-            <!-- Questions will be dynamically inserted here -->
-        </div>
-        <button id="nextBtn" onclick="nextQuestion()">Next</button>
-        <button id="restartBtn" style="display: none;" onclick="restartQuiz()">Restart Quiz</button>
-    </div>
-    <div id="result" class="result"></div>
-
-    <script>
-        const allQuestions = [
-            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load" },
-            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness" },
-            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data" },
-            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making" },
-            { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Cash Reserve Management", "Critical Resource Management"], correct: "Customer Relationship Management" },
-            { question: "Which technology supports logistics in supply chains?", options: ["RFID", "Blockchain", "4D Printing"], correct: "RFID" },
-            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables" },
-            { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability" },
-            { question: "What does ERP integrate?", options: ["Customers", "Departments", "Competitors"], correct: "Departments" },
-            { question: "What is data governance?", options: ["Managing security and quality", "Analyzing data trends", "Deleting outdated records"], correct: "Managing security and quality" },
-            { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
-            { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
-            { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
-            { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
-            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" }
-        ];
-
-        let selectedQuestions = [];
-        let currentQuestionIndex = 0;
-        let score = 0;
-        let incorrectAnswers = [];
-
         function selectRandomQuestions() {
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            selectedQuestions = shuffled.slice(0, 45);
+            selectedQuestions = shuffled.slice(0, 5); // Adjusted to pick the first 5 questions for demonstration.
         }
 
         function loadQuestion() {
@@ -166,7 +56,7 @@
                         ? `<h3>Incorrect Answers:</h3>` +
                           incorrectAnswers
                               .map(
-                                  (item) => `
+                                  (item) => ` 
                                       <div class="incorrect">
                                         <p><strong>Question:</strong> ${item.question}</p>
                                         <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
@@ -186,4 +76,13 @@
             score = 0;
             incorrectAnswers = [];
             currentQuestionIndex = 0;
-            document.getElementById("result").innerHTML =
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("nextBtn").style.display = "block";
+            document.getElementById("restartBtn").style.display = "none";
+            selectRandomQuestions(); // Ensure questions are selected
+            loadQuestion(); // Reload the first question
+        }
+
+        // Initialize the quiz
+        selectRandomQuestions();
+        loadQuestion();
