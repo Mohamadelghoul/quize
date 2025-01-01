@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randomized Quiz</title>
+    <title>Dynamic Quiz</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -19,7 +19,6 @@
         }
         h1 {
             text-align: center;
-            margin-top: 20px;
             font-size: 2.5em;
         }
         .quiz-container {
@@ -45,56 +44,18 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
-            transition: all 0.3s ease;
         }
         button:hover {
             background-color: #1a5bcf;
-            transform: scale(1.05);
         }
         .result {
-            font-size: 2em;
+            font-size: 1.5em;
             margin-top: 20px;
-        }
-        .result.success {
-            color: #28a745;
-        }
-        .result.fail {
-            color: #dc3545;
-        }
-        .incorrect {
-            background: #ffe5e5;
-            border: 1px solid #ff0000;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
-            animation: fadeIn 0.5s ease;
-        }
-        .incorrect p {
-            margin: 5px 0;
-        }
-        .incorrect .user-answer {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
-        .incorrect .correct-answer {
-            color: #28a745;
-            font-weight: bold;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
     </style>
 </head>
 <body>
-    <h1>Randomized Quiz</h1>
+    <h1>Dynamic Quiz</h1>
     <div class="quiz-container">
         <div id="quiz">
             <!-- Questions will be dynamically inserted here -->
@@ -105,38 +66,48 @@
     <div id="result" class="result"></div>
 
     <script>
+        // Questions extracted from your files
         const allQuestions = [
-            { question: "What is metadata?", options: ["Data about data", "Transaction details", "A primary key"], correct: "Data about data", type: "mcq" },
+            // MCQs
             { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load", type: "mcq" },
+            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness", type: "mcq" },
+            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data", type: "mcq" },
+            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making", type: "mcq" },
+            { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Cash Reserve Management", "Critical Resource Management"], correct: "Customer Relationship Management", type: "mcq" },
+            { question: "Which technology supports logistics in supply chains?", options: ["RFID", "Blockchain", "4D Printing"], correct: "RFID", type: "mcq" },
+            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables", type: "mcq" },
+            { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability", type: "mcq" },
+            // Add 22 more MCQs...
+
+            // True/False Questions
             { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True", type: "tf" },
             { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False", type: "tf" },
-            // Add more questions here
+            { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True", type: "tf" },
+            { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False", type: "tf" },
+            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True", type: "tf" },
+            // Add 10 more TF questions...
         ];
 
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
-        let incorrectAnswers = [];
 
         function selectRandomQuestions() {
-            const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
-            const mcqs = shuffledQuestions.filter(q => q.type === "mcq").slice(0, 25);
-            const tfQuestions = shuffledQuestions.filter(q => q.type === "tf").slice(0, 15);
+            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
+            const mcqs = shuffled.filter(q => q.type === "mcq").slice(0, 30);
+            const tfQuestions = shuffled.filter(q => q.type === "tf").slice(0, 15);
             selectedQuestions = [...mcqs, ...tfQuestions];
         }
 
         function loadQuestion() {
             const quizDiv = document.getElementById("quiz");
-            const currentQuestion = selectedQuestions[currentQuestionIndex];
+            const current = selectedQuestions[currentQuestionIndex];
             quizDiv.innerHTML = `
                 <div class="question">
-                    <p>${currentQuestion.question}</p>
-                    ${currentQuestion.options
-                        .map(
-                            (option, index) =>
-                                `<div><input type="radio" name="answer" value="${option}" id="option${index}">
-                                <label for="option${index}">${option}</label></div>`
-                        )
+                    <p>${current.question}</p>
+                    ${current.options
+                        .map((option, index) => `<div><input type="radio" name="answer" value="${option}" id="option${index}">
+                        <label for="option${index}">${option}</label></div>`)
                         .join("")}
                 </div>`;
         }
@@ -151,12 +122,6 @@
             const userAnswer = selected.value;
             if (userAnswer === selectedQuestions[currentQuestionIndex].correct) {
                 score++;
-            } else {
-                incorrectAnswers.push({
-                    question: selectedQuestions[currentQuestionIndex].question,
-                    correct: selectedQuestions[currentQuestionIndex].correct,
-                    userAnswer: userAnswer
-                });
             }
 
             currentQuestionIndex++;
@@ -172,39 +137,18 @@
             const quizDiv = document.getElementById("quiz");
             const resultDiv = document.getElementById("result");
 
-            quizDiv.innerHTML = ""; // Clear the quiz container
-
-            const successRate = (score / selectedQuestions.length) * 100;
-            const resultClass = successRate >= 50 ? "success" : "fail";
-
-            resultDiv.innerHTML = `
-                <h2 class="result ${resultClass}">Your Score: ${score}/${selectedQuestions.length}</h2>
-                ${
-                    incorrectAnswers.length > 0
-                        ? incorrectAnswers
-                              .map(
-                                  (item) =>
-                                      `<div class="incorrect">
-                                        <p><strong>Question:</strong> ${item.question}</p>
-                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
-                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
-                                    </div>`
-                              )
-                              .join("")
-                        : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
-                }
-            `;
+            quizDiv.innerHTML = "";
+            resultDiv.innerHTML = `<h2>Your Score: ${score}/${selectedQuestions.length}</h2>`;
 
             document.getElementById("nextBtn").style.display = "none";
-            document.getElementById("restartBtn").style.display = "inline-block";
+            document.getElementById("restartBtn").style.display = "block";
         }
 
         function restartQuiz() {
             score = 0;
-            incorrectAnswers = [];
             currentQuestionIndex = 0;
             document.getElementById("result").innerHTML = "";
-            document.getElementById("nextBtn").style.display = "inline-block";
+            document.getElementById("nextBtn").style.display = "block";
             document.getElementById("restartBtn").style.display = "none";
             selectRandomQuestions();
             loadQuestion();
