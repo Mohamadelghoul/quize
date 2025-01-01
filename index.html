@@ -52,6 +52,25 @@
             font-size: 1.5em;
             margin-top: 20px;
         }
+        .incorrect {
+            background: #ffe5e5;
+            border: 1px solid #ff0000;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
+        }
+        .incorrect p {
+            margin: 5px 0;
+        }
+        .incorrect .user-answer {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+        .incorrect .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -91,6 +110,7 @@
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
+        let incorrectAnswers = [];
 
         function selectRandomQuestions() {
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
@@ -122,6 +142,12 @@
             const userAnswer = selected.value;
             if (userAnswer === selectedQuestions[currentQuestionIndex].correct) {
                 score++;
+            } else {
+                incorrectAnswers.push({
+                    question: selectedQuestions[currentQuestionIndex].question,
+                    correct: selectedQuestions[currentQuestionIndex].correct,
+                    userAnswer: userAnswer
+                });
             }
 
             currentQuestionIndex++;
@@ -138,24 +164,23 @@
             const resultDiv = document.getElementById("result");
 
             quizDiv.innerHTML = "";
-            resultDiv.innerHTML = `<h2>Your Score: ${score}/${selectedQuestions.length}</h2>`;
 
-            document.getElementById("nextBtn").style.display = "none";
-            document.getElementById("restartBtn").style.display = "block";
-        }
+            resultDiv.innerHTML = `
+                <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
+                ${
+                    incorrectAnswers.length > 0
+                        ? incorrectAnswers
+                              .map(
+                                  (item) =>
+                                      `<div class="incorrect">
+                                        <p><strong>Question:</strong> ${item.question}</p>
+                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
+                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
+                                    </div>`
+                              )
+                              .join("")
+                        : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
+                }
+            `;
 
-        function restartQuiz() {
-            score = 0;
-            currentQuestionIndex = 0;
-            document.getElementById("result").innerHTML = "";
-            document.getElementById("nextBtn").style.display = "block";
-            document.getElementById("restartBtn").style.display = "none";
-            selectRandomQuestions();
-            loadQuestion();
-        }
-
-        selectRandomQuestions();
-        loadQuestion();
-    </script>
-</body>
-</html>
+            document.getElementById("
