@@ -86,21 +86,18 @@
 
     <script>
         const allQuestions = [
-            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load" },
-            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness" },
-            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data" },
-            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making" },
-            { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Cash Reserve Management", "Critical Resource Management"], correct: "Customer Relationship Management" },
-            { question: "Which technology supports logistics in supply chains?", options: ["RFID", "Blockchain", "4D Printing"], correct: "RFID" },
-            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables" },
-            { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability" },
-            { question: "What does ERP integrate?", options: ["Customers", "Departments", "Competitors"], correct: "Departments" },
-            { question: "What is data governance?", options: ["Managing security and quality", "Analyzing data trends", "Deleting outdated records"], correct: "Managing security and quality" },
+            { question: "What is a primary key in a database?", options: ["A field that links two tables", "A field that uniquely identifies a record", "A duplicate column"], correct: "A field that uniquely identifies a record" },
+            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Supporting decision-making", "Encrypting data"], correct: "Supporting decision-making" },
+            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Evaluate, Test, Link", "Encrypt, Test, Load"], correct: "Extract, Transform, Load" },
+            { question: "What is metadata?", options: ["Encrypts data", "Provides details about data", "Deletes duplicate records"], correct: "Provides details about data" },
+            { question: "What does CRM focus on?", options: ["Customer Relationship Management", "Creating Resource Models", "Client Revenue Management"], correct: "Customer Relationship Management" },
+            // ... Add 30 more MCQs here
             { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
             { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
             { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
             { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
-            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" }
+            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" },
+            // Add 15 more true/false questions here
         ];
 
         let selectedQuestions = [];
@@ -116,14 +113,18 @@
         function loadQuestion() {
             const quizDiv = document.getElementById("quiz");
             const current = selectedQuestions[currentQuestionIndex];
-            quizDiv.innerHTML = 
+            quizDiv.innerHTML = `
                 <div class="question">
                     <p>${current.question}</p>
                     ${current.options
-                        .map((option, index) => <div><input type="radio" name="answer" value="${option}" id="option${index}">
-                        <label for="option${index}">${option}</label></div>)
+                        .map((option, index) => `
+                            <div>
+                                <input type="radio" name="answer" value="${option}" id="option${index}">
+                                <label for="option${index}">${option}</label>
+                            </div>`
+                        )
                         .join("")}
-                </div>;
+                </div>`;
         }
 
         function nextQuestion() {
@@ -159,24 +160,22 @@
 
             quizDiv.innerHTML = "";
 
-            resultDiv.innerHTML = 
+            resultDiv.innerHTML = `
                 <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
                 ${
                     incorrectAnswers.length > 0
-                        ? <h3>Incorrect Answers:</h3> +
+                        ? `<h3>Incorrect Answers:</h3>` +
                           incorrectAnswers
-                              .map(
-                                  (item) => 
-                                      <div class="incorrect">
-                                        <p><strong>Question:</strong> ${item.question}</p>
-                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
-                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
-                                    </div>
+                              .map(item => `
+                                  <div class="incorrect">
+                                    <p><strong>Question:</strong> ${item.question}</p>
+                                    <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
+                                    <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
+                                  </div>`
                               )
                               .join("")
-                        : <h3>🎉 Perfect Score! Well done! 🎉</h3>
-                }
-            ;
+                        : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
+                }`;
 
             document.getElementById("nextBtn").style.display = "none";
             document.getElementById("restartBtn").style.display = "block";
@@ -186,4 +185,16 @@
             score = 0;
             incorrectAnswers = [];
             currentQuestionIndex = 0;
-            document.getElementById("result").innerHTML =
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("nextBtn").style.display = "block";
+            document.getElementById("restartBtn").style.display = "none";
+            selectRandomQuestions();
+            loadQuestion();
+        }
+
+        // Initialize the quiz on page load
+        selectRandomQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>
