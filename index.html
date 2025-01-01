@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Randomized Quiz</title>
     <style>
-        /* General styles */
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -46,18 +45,51 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
+            transition: all 0.3s ease;
         }
         button:hover {
             background-color: #1a5bcf;
+            transform: scale(1.05);
         }
         .result {
-            font-size: 1.5em;
+            font-size: 2em;
             margin-top: 20px;
         }
+        .result.success {
+            color: #28a745;
+        }
+        .result.fail {
+            color: #dc3545;
+        }
         .incorrect {
-            color: red;
+            background: #ffe5e5;
+            border: 1px solid #ff0000;
+            border-radius: 10px;
+            padding: 15px;
             margin-top: 10px;
-            font-size: 1em;
+            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease;
+        }
+        .incorrect p {
+            margin: 5px 0;
+        }
+        .incorrect .user-answer {
+            color: #ff4d4d;
+            font-weight: bold;
+        }
+        .incorrect .correct-answer {
+            color: #28a745;
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -73,40 +105,26 @@
     <div id="result" class="result"></div>
 
     <script>
-        // Pool of questions
         const allQuestions = [
-            // Multiple Choice Questions
-            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness", type: "mcq" },
+            { question: "What is metadata?", options: ["Data about data", "Transaction details", "A primary key"], correct: "Data about data", type: "mcq" },
             { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load", type: "mcq" },
-            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data", type: "mcq" },
-            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making", type: "mcq" },
-            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables", type: "mcq" },
-            // Add more MCQs as needed...
-
-            // True/False Questions
             { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True", type: "tf" },
-            { question: "Data governance refers to managing the availability and security of data.", options: ["True", "False"], correct: "True", type: "tf" },
-            { question: "Relational databases are unstructured data repositories.", options: ["True", "False"], correct: "False", type: "tf" },
-            { question: "Data lakes store processed, structured data.", options: ["True", "False"], correct: "False", type: "tf" },
-            { question: "Real-time data systems process information immediately.", options: ["True", "False"], correct: "True", type: "tf" },
-            // Add more True/False questions as needed...
+            { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False", type: "tf" },
+            // Add more questions here
         ];
 
-        // Selected questions
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
         let incorrectAnswers = [];
 
-        // Function to shuffle and select questions
         function selectRandomQuestions() {
             const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
-            const mcqs = shuffledQuestions.filter(q => q.type === "mcq").slice(0, 15);
-            const tfQuestions = shuffledQuestions.filter(q => q.type === "tf").slice(0, 10);
+            const mcqs = shuffledQuestions.filter(q => q.type === "mcq").slice(0, 25);
+            const tfQuestions = shuffledQuestions.filter(q => q.type === "tf").slice(0, 15);
             selectedQuestions = [...mcqs, ...tfQuestions];
         }
 
-        // Load the current question
         function loadQuestion() {
             const quizDiv = document.getElementById("quiz");
             const currentQuestion = selectedQuestions[currentQuestionIndex];
@@ -123,7 +141,6 @@
                 </div>`;
         }
 
-        // Handle the next button
         function nextQuestion() {
             const selected = document.querySelector('input[name="answer"]:checked');
             if (!selected) {
@@ -151,35 +168,37 @@
             }
         }
 
-        // Show results
         function showResults() {
             const quizDiv = document.getElementById("quiz");
             const resultDiv = document.getElementById("result");
 
             quizDiv.innerHTML = ""; // Clear the quiz container
 
+            const successRate = (score / selectedQuestions.length) * 100;
+            const resultClass = successRate >= 50 ? "success" : "fail";
+
             resultDiv.innerHTML = `
-                <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
+                <h2 class="result ${resultClass}">Your Score: ${score}/${selectedQuestions.length}</h2>
                 ${
                     incorrectAnswers.length > 0
-                        ? `<div class="incorrect"><h3>Incorrect Answers:</h3>${incorrectAnswers
+                        ? incorrectAnswers
                               .map(
                                   (item) =>
-                                      `<p><strong>Question:</strong> ${item.question}<br>
-                                       <strong>Your Answer:</strong> ${item.userAnswer}<br>
-                                       <strong>Correct Answer:</strong> ${item.correct}</p>`
+                                      `<div class="incorrect">
+                                        <p><strong>Question:</strong> ${item.question}</p>
+                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
+                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
+                                    </div>`
                               )
-                              .join("")}</div>`
+                              .join("")
                         : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
                 }
             `;
 
-            // Hide the Next button and show Restart
             document.getElementById("nextBtn").style.display = "none";
             document.getElementById("restartBtn").style.display = "inline-block";
         }
 
-        // Restart the quiz
         function restartQuiz() {
             score = 0;
             incorrectAnswers = [];
@@ -191,7 +210,6 @@
             loadQuestion();
         }
 
-        // Initialize the quiz
         selectRandomQuestions();
         loadQuestion();
     </script>
