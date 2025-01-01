@@ -52,25 +52,6 @@
             font-size: 1.5em;
             margin-top: 20px;
         }
-        .incorrect {
-            background: #ffe5e5;
-            border: 1px solid #ff0000;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 10px;
-            box-shadow: 0 4px 6px rgba(255, 0, 0, 0.2);
-        }
-        .incorrect p {
-            margin: 5px 0;
-        }
-        .incorrect .user-answer {
-            color: #ff4d4d;
-            font-weight: bold;
-        }
-        .incorrect .correct-answer {
-            color: #28a745;
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -85,38 +66,41 @@
     <div id="result" class="result"></div>
 
     <script>
-        // Questions extracted from your files
         const allQuestions = [
-            // MCQs
-            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load", type: "mcq" },
-            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness", type: "mcq" },
-            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data", type: "mcq" },
-            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making", type: "mcq" },
-            { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Cash Reserve Management", "Critical Resource Management"], correct: "Customer Relationship Management", type: "mcq" },
-            { question: "Which technology supports logistics in supply chains?", options: ["RFID", "Blockchain", "4D Printing"], correct: "RFID", type: "mcq" },
-            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables", type: "mcq" },
-            { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability", type: "mcq" },
-            // Add more MCQs (total 30)
+            // 30 MCQs
+            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load" },
+            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness" },
+            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data" },
+            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making" },
+            { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Cash Reserve Management", "Critical Resource Management"], correct: "Customer Relationship Management" },
+            { question: "Which technology supports logistics in supply chains?", options: ["RFID", "Blockchain", "4D Printing"], correct: "RFID" },
+            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables" },
+            { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability" },
+            { question: "What does ERP integrate?", options: ["Customers", "Departments", "Competitors"], correct: "Departments" },
+            { question: "What is data governance?", options: ["Managing security and quality", "Analyzing data trends", "Deleting outdated records"], correct: "Managing security and quality" },
+            // Add 20 more MCQs here
 
-            // True/False Questions
-            { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True", type: "tf" },
-            { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False", type: "tf" },
-            { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True", type: "tf" },
-            { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False", type: "tf" },
-            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True", type: "tf" },
-            // Add more TF questions (total 15)
+            // 15 True/False Questions
+            { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
+            { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
+            { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
+            { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
+            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" },
+            { question: "High-quality data reduces decision-making errors.", options: ["True", "False"], correct: "True" },
+            { question: "RFID is primarily used for decision-making.", options: ["True", "False"], correct: "False" },
+            { question: "Data visualization tools are part of BI.", options: ["True", "False"], correct: "True" },
+            { question: "CRM ignores customer satisfaction.", options: ["True", "False"], correct: "False" },
+            { question: "Blockchain is centralized.", options: ["True", "False"], correct: "False" },
+            // Add 5 more True/False questions here
         ];
 
         let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
-        let incorrectAnswers = [];
 
         function selectRandomQuestions() {
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            const mcqs = shuffled.filter(q => q.type === "mcq").slice(0, 30);
-            const tfQuestions = shuffled.filter(q => q.type === "tf").slice(0, 15);
-            selectedQuestions = [...mcqs, ...tfQuestions];
+            selectedQuestions = shuffled.slice(0, 45); // Select 30 MCQs + 15 T/F
         }
 
         function loadQuestion() {
@@ -142,12 +126,6 @@
             const userAnswer = selected.value;
             if (userAnswer === selectedQuestions[currentQuestionIndex].correct) {
                 score++;
-            } else {
-                incorrectAnswers.push({
-                    question: selectedQuestions[currentQuestionIndex].question,
-                    correct: selectedQuestions[currentQuestionIndex].correct,
-                    userAnswer: userAnswer
-                });
             }
 
             currentQuestionIndex++;
@@ -165,22 +143,24 @@
 
             quizDiv.innerHTML = "";
 
-            resultDiv.innerHTML = `
-                <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
-                ${
-                    incorrectAnswers.length > 0
-                        ? incorrectAnswers
-                              .map(
-                                  (item) =>
-                                      `<div class="incorrect">
-                                        <p><strong>Question:</strong> ${item.question}</p>
-                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
-                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
-                                    </div>`
-                              )
-                              .join("")
-                        : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
-                }
-            `;
+            resultDiv.innerHTML = `<h2>Your Score: ${score}/${selectedQuestions.length}</h2>`;
 
-            document.getElementById("
+            document.getElementById("nextBtn").style.display = "none";
+            document.getElementById("restartBtn").style.display = "block";
+        }
+
+        function restartQuiz() {
+            score = 0;
+            currentQuestionIndex = 0;
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("nextBtn").style.display = "block";
+            document.getElementById("restartBtn").style.display = "none";
+            selectRandomQuestions();
+            loadQuestion();
+        }
+
+        selectRandomQuestions();
+        loadQuestion();
+    </script>
+</body>
+</html>
