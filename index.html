@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Quiz</title>
+    <title>Randomized Quiz</title>
     <style>
         /* General styles */
         body {
@@ -68,36 +68,48 @@
             <!-- Questions will be dynamically inserted here -->
         </div>
         <button id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button id="restartBtn" style="display: none;" onclick="restartQuiz()">Restart Quiz</button>
     </div>
     <div id="result" class="result"></div>
 
     <script>
-        // Questions and answers
-        const questions = [
-            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness" },
-            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making" },
-            { question: "What does 'data timeliness' refer to?", options: ["Real-time updates", "Data accuracy", "Data consistency"], correct: "Real-time updates" },
-            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data" },
-            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables" },
-            { question: "What is a data steward?", options: ["Creates duplicate data", "Implements data policies", "Monitors customer data"], correct: "Implements data policies" },
-            { question: "What is a data lake?", options: ["A repository for raw data", "A tool for mining data", "A database"], correct: "A repository for raw data" },
-            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load" }
+        // Pool of questions
+        const allQuestions = [
+            // Multiple Choice Questions
+            { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness", type: "mcq" },
+            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load", type: "mcq" },
+            { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data", type: "mcq" },
+            { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Transaction processing"], correct: "Decision-making", type: "mcq" },
+            { question: "What is a foreign key in a database?", options: ["A unique identifier", "A field that links two tables", "A duplicate column"], correct: "A field that links two tables", type: "mcq" },
+            // Add more MCQs as needed...
+
+            // True/False Questions
+            { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True", type: "tf" },
+            { question: "Data governance refers to managing the availability and security of data.", options: ["True", "False"], correct: "True", type: "tf" },
+            { question: "Relational databases are unstructured data repositories.", options: ["True", "False"], correct: "False", type: "tf" },
+            { question: "Data lakes store processed, structured data.", options: ["True", "False"], correct: "False", type: "tf" },
+            { question: "Real-time data systems process information immediately.", options: ["True", "False"], correct: "True", type: "tf" },
+            // Add more True/False questions as needed...
         ];
 
+        // Selected questions
+        let selectedQuestions = [];
         let currentQuestionIndex = 0;
         let score = 0;
         let incorrectAnswers = [];
-        let shuffledQuestions = [];
 
-        // Shuffle questions each time the quiz is started
-        function shuffleQuestions() {
-            shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+        // Function to shuffle and select questions
+        function selectRandomQuestions() {
+            const shuffledQuestions = [...allQuestions].sort(() => Math.random() - 0.5);
+            const mcqs = shuffledQuestions.filter(q => q.type === "mcq").slice(0, 15);
+            const tfQuestions = shuffledQuestions.filter(q => q.type === "tf").slice(0, 10);
+            selectedQuestions = [...mcqs, ...tfQuestions];
         }
 
         // Load the current question
         function loadQuestion() {
             const quizDiv = document.getElementById("quiz");
-            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const currentQuestion = selectedQuestions[currentQuestionIndex];
             quizDiv.innerHTML = `
                 <div class="question">
                     <p>${currentQuestion.question}</p>
@@ -120,19 +132,19 @@
             }
 
             const userAnswer = selected.value;
-            if (userAnswer === shuffledQuestions[currentQuestionIndex].correct) {
+            if (userAnswer === selectedQuestions[currentQuestionIndex].correct) {
                 score++;
             } else {
                 incorrectAnswers.push({
-                    question: shuffledQuestions[currentQuestionIndex].question,
-                    correct: shuffledQuestions[currentQuestionIndex].correct,
+                    question: selectedQuestions[currentQuestionIndex].question,
+                    correct: selectedQuestions[currentQuestionIndex].correct,
                     userAnswer: userAnswer
                 });
             }
 
             currentQuestionIndex++;
 
-            if (currentQuestionIndex < shuffledQuestions.length) {
+            if (currentQuestionIndex < selectedQuestions.length) {
                 loadQuestion();
             } else {
                 showResults();
@@ -147,7 +159,7 @@
             quizDiv.innerHTML = ""; // Clear the quiz container
 
             resultDiv.innerHTML = `
-                <h2>Your Score: ${score}/${shuffledQuestions.length}</h2>
+                <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
                 ${
                     incorrectAnswers.length > 0
                         ? `<div class="incorrect"><h3>Incorrect Answers:</h3>${incorrectAnswers
@@ -162,12 +174,25 @@
                 }
             `;
 
-            // Hide the Next button
+            // Hide the Next button and show Restart
             document.getElementById("nextBtn").style.display = "none";
+            document.getElementById("restartBtn").style.display = "inline-block";
+        }
+
+        // Restart the quiz
+        function restartQuiz() {
+            score = 0;
+            incorrectAnswers = [];
+            currentQuestionIndex = 0;
+            document.getElementById("result").innerHTML = "";
+            document.getElementById("nextBtn").style.display = "inline-block";
+            document.getElementById("restartBtn").style.display = "none";
+            selectRandomQuestions();
+            loadQuestion();
         }
 
         // Initialize the quiz
-        shuffleQuestions();
+        selectRandomQuestions();
         loadQuestion();
     </script>
 </body>
