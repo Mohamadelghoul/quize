@@ -86,7 +86,6 @@
 
     <script>
         const allQuestions = [
-            // 30 MCQs
             { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Encrypt, Test, Load", "Evaluate, Test, Link"], correct: "Extract, Transform, Load" },
             { question: "What is a primary trait of high-quality data?", options: ["Inaccuracy", "Completeness", "Duplication"], correct: "Completeness" },
             { question: "What is metadata?", options: ["Data about data", "A primary key", "Transaction details"], correct: "Data about data" },
@@ -97,20 +96,11 @@
             { question: "What is the key advantage of blockchain?", options: ["Mutability", "Immutability", "Centralization"], correct: "Immutability" },
             { question: "What does ERP integrate?", options: ["Customers", "Departments", "Competitors"], correct: "Departments" },
             { question: "What is data governance?", options: ["Managing security and quality", "Analyzing data trends", "Deleting outdated records"], correct: "Managing security and quality" },
-            // Add 20 more MCQs here
-
-            // 15 True/False Questions
             { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
             { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
             { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
             { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
-            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" },
-            { question: "High-quality data reduces decision-making errors.", options: ["True", "False"], correct: "True" },
-            { question: "RFID is primarily used for decision-making.", options: ["True", "False"], correct: "False" },
-            { question: "Data visualization tools are part of BI.", options: ["True", "False"], correct: "True" },
-            { question: "CRM ignores customer satisfaction.", options: ["True", "False"], correct: "False" },
-            { question: "Blockchain is centralized.", options: ["True", "False"], correct: "False" },
-            // Add 5 more True/False questions here
+            { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" }
         ];
 
         let selectedQuestions = [];
@@ -120,7 +110,7 @@
 
         function selectRandomQuestions() {
             const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            selectedQuestions = shuffled.slice(0, 45); // Select 30 MCQs + 15 T/F
+            selectedQuestions = shuffled.slice(0, 45);
         }
 
         function loadQuestion() {
@@ -173,8 +163,27 @@
                 <h2>Your Score: ${score}/${selectedQuestions.length}</h2>
                 ${
                     incorrectAnswers.length > 0
-                        ? incorrectAnswers
+                        ? `<h3>Incorrect Answers:</h3>` +
+                          incorrectAnswers
                               .map(
-                                  (item) =>
-                                      `<div class="incorrect">
-                                        <p><strong>Question:</strong> ${item.question}</
+                                  (item) => `
+                                      <div class="incorrect">
+                                        <p><strong>Question:</strong> ${item.question}</p>
+                                        <p><strong>Your Answer:</strong> <span class="user-answer">${item.userAnswer}</span></p>
+                                        <p><strong>Correct Answer:</strong> <span class="correct-answer">${item.correct}</span></p>
+                                    </div>`
+                              )
+                              .join("")
+                        : `<h3>🎉 Perfect Score! Well done! 🎉</h3>`
+                }
+            `;
+
+            document.getElementById("nextBtn").style.display = "none";
+            document.getElementById("restartBtn").style.display = "block";
+        }
+
+        function restartQuiz() {
+            score = 0;
+            incorrectAnswers = [];
+            currentQuestionIndex = 0;
+            document.getElementById("result").innerHTML =
