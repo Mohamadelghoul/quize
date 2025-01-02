@@ -109,9 +109,10 @@
         let incorrectAnswers = [];
 
         function selectRandomQuestions() {
-            const shuffledMcq = [...mcqQuestions].sort(() => Math.random() - 0.5).slice(0, 35);
-            const shuffledTf = [...trueFalseQuestions].sort(() => Math.random() - 0.5).slice(0, 20);
+            const shuffledMcq = [...mcqQuestions].sort(() => Math.random() - 0.5).slice(0, 30);
+            const shuffledTf = [...trueFalseQuestions].sort(() => Math.random() - 0.5).slice(0, 15);
             selectedQuestions = shuffledMcq.concat(shuffledTf).sort(() => Math.random() - 0.5);
+            console.log("Selected Questions:", selectedQuestions); // Debugging Output
         }
 
         function loadQuestion() {
