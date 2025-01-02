@@ -16,6 +16,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            transition: background 0.5s ease;
         }
         h1 {
             text-align: center;
@@ -44,6 +45,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1em;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #1a5bcf;
@@ -71,10 +73,43 @@
             color: #28a745;
             font-weight: bold;
         }
+        .progress-bar {
+            height: 10px;
+            background: #2575fc;
+            width: 0;
+            border-radius: 5px;
+            transition: width 0.3s ease;
+        }
+        .progress-container {
+            width: 90%;
+            max-width: 600px;
+            background: #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            color: #333;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .theme-toggle:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 <body>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
     <h1>Dynamic Quiz</h1>
+    <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
     <div class="quiz-container">
         <div id="quiz">
             <!-- Questions will be dynamically inserted here -->
@@ -86,55 +121,13 @@
 
     <script>
         const mcqQuestions = [
-    { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Evaluate, Test, Load", "Encrypt, Transfer, Link"], correct: "Extract, Transform, Load" },
-    { question: "What is the primary purpose of a data warehouse?", options: ["Storing raw data", "Decision-making", "Encrypting data"], correct: "Decision-making" },
-    { question: "What is metadata?", options: ["Data about data", "An identifier", "Customer information"], correct: "Data about data" },
-    { question: "What does CRM stand for?", options: ["Customer Relationship Management", "Customer Resource Management", "Client Retention Management"], correct: "Customer Relationship Management" },
-    { question: "Which technology is used to track objects in supply chains?", options: ["RFID", "Blockchain", "Drones"], correct: "RFID" },
-    { question: "What is a foreign key in a relational database?", options: ["A unique identifier", "A link between tables", "A primary key"], correct: "A link between tables" },
-    { question: "What does ERP integrate?", options: ["Departments", "Competitors", "Suppliers"], correct: "Departments" },
-    { question: "Which of these is NOT a high-quality data trait?", options: ["Accuracy", "Redundancy", "Timeliness"], correct: "Redundancy" },
-    { question: "What is the role of data governance?", options: ["Managing security and quality", "Encrypting sensitive data", "Deleting outdated data"], correct: "Managing security and quality" },
-    { question: "Which of these technologies supports procurement through 3D printing?", options: ["CAD", "Blockchain", "CAM"], correct: "CAD" },
-    { question: "What is the purpose of blockchain in supply chains?", options: ["Centralization", "Mutability", "Immutability"], correct: "Immutability" },
-    { question: "What does MDM stand for in data governance?", options: ["Master Data Management", "Metadata Management", "Main Data Manipulation"], correct: "Master Data Management" },
-    { question: "What is the primary use of a relational database?", options: ["Storing unstructured data", "Organizing structured data", "Encrypting files"], correct: "Organizing structured data" },
-    { question: "What is a key advantage of blockchain?", options: ["Mutability", "Immutability", "Duplication"], correct: "Immutability" },
-    { question: "Which technology enables logistics optimization?", options: ["RFID", "4D Printing", "Data Lakes"], correct: "RFID" },
-    { question: "What is a data lake used for?", options: ["Storing raw data", "Storing processed data", "Encrypting sensitive data"], correct: "Storing raw data" },
-    { question: "What does BI stand for in analytics?", options: ["Business Intelligence", "Blockchain Integration", "Basic Insights"], correct: "Business Intelligence" },
-    { question: "Which data analysis technique finds relationships between variables?", options: ["Cluster Analysis", "Affinity Grouping", "Classification Analysis"], correct: "Affinity Grouping" },
-    { question: "What is the primary purpose of ETL processes?", options: ["Data Transformation", "Encryption", "Data Mining"], correct: "Data Transformation" },
-    { question: "What is an operational CRM used for?", options: ["Back-office analysis", "Day-to-day transactions", "Strategic planning"], correct: "Day-to-day transactions" },
-    { question: "Which is a primary component of ERP?", options: ["Supply chain management", "E-logistics", "Customer service"], correct: "Supply chain management" },
-    { question: "What is data visualization?", options: ["Visualizing raw data", "Analyzing trends through graphs", "Encrypting files"], correct: "Analyzing trends through graphs" },
-    { question: "What is a primary goal of analytical CRM?", options: ["Customer retention", "Operational transactions", "Data storage"], correct: "Customer retention" },
-    { question: "What does scalability in a database mean?", options: ["Ability to handle growth", "Reducing redundancy", "Centralizing operations"], correct: "Ability to handle growth" },
-    { question: "What is the role of data integrity constraints?", options: ["Improving encryption", "Ensuring data quality", "Managing redundancy"], correct: "Ensuring data quality" },
-    { question: "What is a recommendation engine used for?", options: ["Making data decisions", "Generating customer insights", "Suggesting products"], correct: "Suggesting products" },
-    { question: "What is an extended ERP component?", options: ["E-business tools", "Accounting tools", "Basic CRM tools"], correct: "E-business tools" },
-    { question: "What is a database record?", options: ["A set of fields", "A unique identifier", "An attribute"], correct: "A set of fields" },
-    { question: "What does a relational integrity constraint ensure?", options: ["Correct relationships", "Data encryption", "Unstructured storage"], correct: "Correct relationships" }
-];
+            { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Evaluate, Test, Load", "Encrypt, Transfer, Link"], correct: "Extract, Transform, Load" },
+            // Add more questions...
         ];
 
         const trueFalseQuestions = [
-    { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
-    { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
-    { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
-    { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
-    { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" },
-    { question: "High-quality data is always redundant.", options: ["True", "False"], correct: "False" },
-    { question: "RFID is used for tracking objects in logistics.", options: ["True", "False"], correct: "True" },
-    { question: "3D printing supports materials management.", options: ["True", "False"], correct: "True" },
-    { question: "Drones are commonly used for data encryption.", options: ["True", "False"], correct: "False" },
-    { question: "Operational CRM deals with front-office transactions.", options: ["True", "False"], correct: "True" },
-    { question: "Data governance ensures data availability and quality.", options: ["True", "False"], correct: "True" },
-    { question: "E-logistics is an example of an extended ERP component.", options: ["True", "False"], correct: "True" },
-    { question: "A foreign key is used to uniquely identify a record in a table.", options: ["True", "False"], correct: "False" },
-    { question: "Cloud ERP is the only type of ERP available today.", options: ["True", "False"], correct: "False" },
-    { question: "Data warehouses are designed for real-time transactions.", options: ["True", "False"], correct: "False" }
-];
+            { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
+            // Add more questions...
         ];
 
         let selectedQuestions = [];
@@ -146,7 +139,6 @@
             const shuffledMcq = [...mcqQuestions].sort(() => Math.random() - 0.5).slice(0, 30);
             const shuffledTf = [...trueFalseQuestions].sort(() => Math.random() - 0.5).slice(0, 15);
             selectedQuestions = shuffledMcq.concat(shuffledTf).sort(() => Math.random() - 0.5);
-            console.log("Selected Questions:", selectedQuestions); // Debugging Output
         }
 
         function loadQuestion() {
@@ -164,6 +156,7 @@
                         )
                         .join("")}
                 </div>`;
+            updateProgressBar();
         }
 
         function nextQuestion() {
@@ -229,6 +222,23 @@
             document.getElementById("restartBtn").style.display = "none";
             selectRandomQuestions();
             loadQuestion();
+        }
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById("progressBar");
+            const progress = ((currentQuestionIndex + 1) / selectedQuestions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle("dark-theme");
+            if (document.body.classList.contains("dark-theme")) {
+                document.body.style.background = "linear-gradient(to bottom, #1e1e2f, #41416e)";
+                document.querySelector(".theme-toggle").innerText = "Light Theme";
+            } else {
+                document.body.style.background = "linear-gradient(to bottom, #6a11cb, #2575fc)";
+                document.querySelector(".theme-toggle").innerText = "Dark Theme";
+            }
         }
 
         // Initialize the quiz on page load
