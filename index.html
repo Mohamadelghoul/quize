@@ -85,19 +85,22 @@
     <div id="result" class="result"></div>
 
     <script>
-        const allQuestions = [
+        const mcqQuestions = [
             { question: "What is a primary key in a database?", options: ["A field that links two tables", "A field that uniquely identifies a record", "A duplicate column"], correct: "A field that uniquely identifies a record" },
             { question: "What is the purpose of a data warehouse?", options: ["Storing raw data", "Supporting decision-making", "Encrypting data"], correct: "Supporting decision-making" },
             { question: "What does ETL stand for?", options: ["Extract, Transform, Load", "Evaluate, Test, Link", "Encrypt, Test, Load"], correct: "Extract, Transform, Load" },
             { question: "What is metadata?", options: ["Encrypts data", "Provides details about data", "Deletes duplicate records"], correct: "Provides details about data" },
             { question: "What does CRM focus on?", options: ["Customer Relationship Management", "Creating Resource Models", "Client Revenue Management"], correct: "Customer Relationship Management" },
-            // ... Add 30 more MCQs here
+            // Add more MCQs here from the provided files
+        ];
+
+        const trueFalseQuestions = [
             { question: "Blockchain ensures immutability of data.", options: ["True", "False"], correct: "True" },
             { question: "Relational databases store unstructured data.", options: ["True", "False"], correct: "False" },
             { question: "CRM improves customer retention.", options: ["True", "False"], correct: "True" },
             { question: "Data lakes store only processed data.", options: ["True", "False"], correct: "False" },
             { question: "ERP integrates all organizational departments.", options: ["True", "False"], correct: "True" },
-            // Add 15 more true/false questions here
+            // Add more true/false questions here from the provided files
         ];
 
         let selectedQuestions = [];
@@ -106,8 +109,9 @@
         let incorrectAnswers = [];
 
         function selectRandomQuestions() {
-            const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-            selectedQuestions = shuffled.slice(0, 45);
+            const shuffledMcq = [...mcqQuestions].sort(() => Math.random() - 0.5).slice(0, 35);
+            const shuffledTf = [...trueFalseQuestions].sort(() => Math.random() - 0.5).slice(0, 20);
+            selectedQuestions = shuffledMcq.concat(shuffledTf).sort(() => Math.random() - 0.5);
         }
 
         function loadQuestion() {
